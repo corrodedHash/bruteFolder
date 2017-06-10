@@ -1,5 +1,6 @@
 #!/bin/python
 import enum
+import copy
 
 def turn(start, turn):
     if turn == 0:
@@ -51,7 +52,7 @@ class chain:
 
     def fold(self, index):
         self._fold_list.append(index)
-        if 2 * index >= len(self) - 1:
+        if 2 * index >= len(self) - 2:
             self._cut_up.append(-self._chain_end)
             self._chain_end = self._chain_start + index + 1
         else:
@@ -60,15 +61,14 @@ class chain:
 
     def reset_fold(self):
         if len(self._fold_list) > 0:
-            self._fold_list.pop()
             if self._cut_up[-1] < 0:
-                self._chain_end = self._cut_up[-1]
+                self._chain_end = -self._cut_up[-1]
             else:
                 self._chain_start = self._cut_up[-1]
             self._cut_up.pop()
-            return True
+            self._fold_list.pop()
         else:
-            return False
+            raise ValueError
 
     def folded(self):
         return len(self) == 1
@@ -86,26 +86,40 @@ def get_fold(chain):
         if chain.folded():
             yield chain.get_fold_list()
 
-        if len(chain.get_fold_list()) == 1:
-            if start_index == 1:
-                print("bla: " + str(chain.get_chain()))
-
         for index in range(start_index, len(chain) - 1):
             if chain.can_fold(index):
                 chain.fold(index)
                 start_index = 0
                 break
         else:
-            chain.reset_fold()
             if len(chain.get_fold_list()) == 0:
                 return
             start_index = chain.get_fold_list()[-1] + 1
+            chain.reset_fold()
 
 
 if __name__ == "__main__":
-#for x in get_fold(chain(str_to_dir_list("LRRLLLRRLRRRLLR"))):
-#    print(x)
-    c = chain(str_to_dir_list("LRR"))
-    print(c.get_chain())
+    chainz = ["LRRLLLRRLRRRLLR", "LRR"]
+    c = chain(str_to_dir_list(chainz[0]))
+    best_fold = []
+    best_fold_count = 0
+    print("chain: " + str(c.get_chain()))
+    counter = 0
     for x in get_fold(c):
-        print(x)
+        counter += 1
+        if counter % 2000 == 0:
+            print("Checked " + str(counter))
+        if not best_fold:
+            best_fold = copy.deepcopy(x)
+            best_fold_count = 1
+            print("Found: " + str(x))
+            continue
+        if len(x) < len(best_fold):
+            best_fold = copy.deepcopy(x)
+            best_fold_count = 1
+            print("Found: " + str(x))
+            continue
+        if len(x) == len(best_fold):
+            best_fold_count += 1
+    print(best_fold)
+    print(best_fold_count)
