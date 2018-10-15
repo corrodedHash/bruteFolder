@@ -1,14 +1,16 @@
 """Keeps function to modify directions"""
 def turn(start, turn_dir):
     """Turns given direction in given direction"""
+    assert turn_dir < 4
+
     if turn_dir == 0:
         return start
     if turn_dir == 1:
         return (start + 1) % 4
     if turn_dir == 2:
         return (start + 2) % 4
-    if turn_dir == 3:
-        return (start + 3) % 4
+
+    return (start + 3) % 4
 
 
 def get_turn_diff(start, end):

@@ -1,7 +1,9 @@
 """Contains tests for chain module"""
 import unittest
-import direction
-import chain
+
+from .context import brutefolder
+from brutefolder import direction # pylint: disable=wrong-import-order
+from brutefolder import chain # pylint: disable=wrong-import-order
 
 
 class ChainTestClass(unittest.TestCase):

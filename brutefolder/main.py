@@ -1,9 +1,9 @@
 """Main script of project"""
 import copy
 
-import folding
-import direction
-import chain
+from brutefolder import folding
+from brutefolder import direction
+from brutefolder import chain
 
 
 def main():

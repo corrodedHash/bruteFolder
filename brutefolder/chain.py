@@ -1,5 +1,5 @@
 """Contains Chain class"""
-from direction import turn, get_turn_diff
+from brutefolder.direction import turn, get_turn_diff
 
 
 class Chain:
