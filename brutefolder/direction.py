@@ -5,16 +5,11 @@ from typing import List
 def turn(start: int, turn_dir: int) -> int:
     """Turns given direction in given direction"""
     assert turn_dir < 4
+    assert turn_dir >= 0
+    assert start < 4
+    assert start >= 0
 
-    if turn_dir == 0:
-        return start
-    if turn_dir == 1:
-        return (start + 1) % 4
-    if turn_dir == 2:
-        return (start + 2) % 4
-
-    return (start + 3) % 4
-
+    return (start + turn_dir) % 4
 
 def get_turn_diff(start: int, end: int) -> int:
     """Returns the direction that is needed to turn from start to end"""

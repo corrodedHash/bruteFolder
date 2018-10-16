@@ -23,14 +23,20 @@ class Chain:
         return self.whole_chain[self.chain_start: self.chain_end]
 
     def can_fold(self, index: int) -> bool:
-        """Checks if the chain can be folded at this index"""
+        """Checks if the chain can be folded at the edge after the index"""
         assert index < len(self.chain) - 1
+        assert index >= 0
 
         turn_dir = get_turn_diff(self.chain[index], self.chain[index + 1])
-        for before, after in zip(self.chain[:index + 1][::-1], self.chain[index + 1:]):
-            if get_turn_diff(before, turn(after, turn_dir)) != 2:
-                return False
-        return True
+        assert turn_dir in (1, 3)
+
+        first_part = self.chain[:index + 1][::-1]
+        last_part = self.chain[index + 1:]
+        parts = zip(first_part, last_part)
+
+        def match(x, y):
+            return get_turn_diff(x, turn(y, turn_dir)) == 2
+        return all(match(before, after) for before, after in parts)
 
     def fold(self, index: int) -> None:
         """Actually folds the chain. Does not check for validity"""
@@ -45,13 +51,15 @@ class Chain:
     def reset_fold(self) -> None:
         """Resets the last fold"""
         assert self.fold_list
+        assert self.cut_up
 
-        if self.cut_up[-1] < 0:
-            self.chain_end = -self.cut_up[-1]
-        else:
-            self.chain_start = self.cut_up[-1]
-        self.cut_up.pop()
         self.fold_list.pop()
+        last_index = self.cut_up.pop()
+
+        if last_index < 0:
+            self.chain_end = -1 * last_index
+        else:
+            self.chain_start = last_index
 
     def folded(self) -> bool:
         """Checks if the chain can be folded further"""
