@@ -26,8 +26,7 @@ class Chain:
         """Checks if the chain can be folded at this index"""
         assert index < len(self.chain) - 1
 
-        turn_dir = get_turn_diff(
-            self.chain[index], self.chain[index + 1])
+        turn_dir = get_turn_diff(self.chain[index], self.chain[index + 1])
         for before, after in zip(self.chain[:index + 1][::-1], self.chain[index + 1:]):
             if get_turn_diff(before, turn(after, turn_dir)) != 2:
                 return False
@@ -45,15 +44,14 @@ class Chain:
 
     def reset_fold(self) -> None:
         """Resets the last fold"""
-        if self.fold_list:
-            if self.cut_up[-1] < 0:
-                self.chain_end = -self.cut_up[-1]
-            else:
-                self.chain_start = self.cut_up[-1]
-            self.cut_up.pop()
-            self.fold_list.pop()
+        assert self.fold_list
+
+        if self.cut_up[-1] < 0:
+            self.chain_end = -self.cut_up[-1]
         else:
-            raise ValueError
+            self.chain_start = self.cut_up[-1]
+        self.cut_up.pop()
+        self.fold_list.pop()
 
     def folded(self) -> bool:
         """Checks if the chain can be folded further"""
@@ -61,4 +59,4 @@ class Chain:
 
     def __len__(self) -> int:
         """Returns the length of the chain"""
-        return len(self.chain)
+        return self.chain_end - self.chain_start

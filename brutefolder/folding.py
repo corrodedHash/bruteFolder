@@ -6,7 +6,7 @@ from typing import Iterator, List
 from .chain import Chain
 
 
-def get_fold(chain: Chain) -> Iterator[List[int]]:
+def get_folds(chain: Chain) -> Iterator[List[int]]:
     """Generator for all possible fold sequences for given chain"""
     start_index = 0
     while True:
