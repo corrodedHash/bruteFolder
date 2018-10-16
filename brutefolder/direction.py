@@ -1,5 +1,8 @@
 """Keeps function to modify directions"""
-def turn(start, turn_dir):
+from typing import List
+
+
+def turn(start: int, turn_dir: int) -> int:
     """Turns given direction in given direction"""
     assert turn_dir < 4
 
@@ -13,12 +16,12 @@ def turn(start, turn_dir):
     return (start + 3) % 4
 
 
-def get_turn_diff(start, end):
+def get_turn_diff(start: int, end: int) -> int:
     """Returns the direction that is needed to turn from start to end"""
     return (end - start) % 4
 
 
-def str_to_dir_list(inp):
+def str_to_dir_list(inp: str)-> List[int]:
     """Return list with directions as given in input"""
     result = []
     for dir_char in inp.lower():
