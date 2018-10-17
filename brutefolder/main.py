@@ -8,53 +8,39 @@ from . import folding
 from . import direction
 from . import chain
 
-def pool_executor(index, queue, chain):
+
+def pool_executor(index, chain):
     best_chain_len = len(chain) + 1
-    count = 0
+    best_fold = []
     for fold in folding.get_folds(chain, [index]):
-        count += 1
         if len(fold) <= best_chain_len:
             best_chain_len = len(fold)
-            queue.put(fold)
+            best_fold = copy.deepcopy(fold)
 
-    return count
+    return best_fold 
 
-def pool_main(chain) -> None:
-    m = Manager()
-    q = m.Queue()
-
-    indices = range(len(chain) - 1)
-    queues = [q] * (len(chain) - 1)
-    chains = [chain] * (len(chain) - 1)
-    params = zip(indices, queues, chains)
-
-    with Pool(processes=4) as pool:
-        x = pool.starmap_async(pool_executor, params, error_callback=lambda x: print(x))
-        pool.close()
-        while (not x.ready()) or (not q.empty()):
-            try:
-                result = q.get(timeout=1)
-            except:
-                if not x.ready():
-                    continue
-                break
-            yield result
-
-        print(x.ready())
-        print(x.get(timeout=1))
-
-    return
-
-
-
-def main() -> None:
+def pool_main(search_chain) -> None:
     """Main function"""
-    search_chain = chain.Chain(direction.str_to_dir_list("LRRLLLRRLRRRLLR"))
+    print("Input chain: {0}".format(search_chain.chain))
+    indices = range(len(search_chain) - 1)
+    chains = [search_chain] * (len(search_chain) - 1)
+    params = zip(indices, chains)
+
+    with Pool(processes=3) as pool:
+        results = pool.starmap(pool_executor, params)
+
+    results = (x for x in results if x)
+
+    result = min(results, key=lambda x: len(x))
+    print("Best result: {0}".format(result))
+
+
+def single_main(search_chain) -> None:
+    """Main function"""
     best_fold: List[int] = []
     best_fold_count = 0
     print("Input chain: {0}".format(search_chain.chain))
     fold_count = 0
-    #for current_fold in pool_main(search_chain):
     for current_fold in folding.get_folds(search_chain):
         fold_count += 1
 
@@ -76,15 +62,7 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
-
-
-def x(index):
-    for i in range(2):
-        yield index
-
-
-def manager(p, q):
-    for i in x(p):
-        q.put(i)
-    return
+    search_chain = chain.Chain(direction.str_to_dir_list("LRRLLLRRLRRRLLR"))
+    #search_chain = chain.Chain(direction.str_to_dir_list("RLLLRRLRRRLL"))
+    #pool_main(search_chain)
+    single_main(search_chain)
