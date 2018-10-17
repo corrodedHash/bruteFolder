@@ -9,10 +9,10 @@ class Direction(enum.Enum):
     down = 3
     left = 4
 
-    def __str__(self):
+    def __str__(self) -> str:
         return self.name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return self.name
 
 DIR_INT_MAP = {Direction.up: 0, Direction.right: 1,

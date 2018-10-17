@@ -1,9 +1,10 @@
 #!/bin/python
 """Contains get_fold function"""
 
-from typing import Iterator, List
+from typing import Iterator, List, Optional, Sequence
 
 from .chain import Chain
+
 
 def spiral_number_map(index: int, start: int, end: int) -> int:
     """Translates a number in a range to a range sorted
@@ -31,23 +32,19 @@ def spiral_number_map(index: int, start: int, end: int) -> int:
     return result
 
 
-def get_folds(chain: Chain) -> Iterator[List[int]]:
+def get_folds(chain: Chain, index_range: Optional[Sequence[int]] = None) -> Iterator[List[int]]:
     """Generator for all possible fold sequences for given chain"""
-    start_index = 0
-    fold_stack = []
-    while True:
-        if chain.folded():
-            yield chain.fold_list
+    if chain.folded():
+        yield chain.fold_list
+        return
 
-        for index in range(start_index, len(chain) - 1):
-            spiral_index = spiral_number_map(index, 0, len(chain) - 2)
-            if chain.can_fold(spiral_index):
-                chain.fold(spiral_index)
-                fold_stack.append(index)
-                start_index = 0
-                break
-        else:
-            if not fold_stack:
-                return
-            start_index = fold_stack.pop() + 1
+    if not index_range:
+        index_range = range(0, len(chain) - 1)
+
+    for index in index_range:
+        spiral_index = spiral_number_map(index, 0, len(chain) - 2)
+        if chain.can_fold(spiral_index):
+            chain.fold(spiral_index)
+            yield from get_folds(chain)
             chain.reset_fold()
+    return
