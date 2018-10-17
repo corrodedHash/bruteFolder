@@ -1,23 +1,38 @@
 """Keeps function to modify directions"""
 from typing import List
+import enum
+
+Direction = enum.Enum('Direction', 'up right down left')
+
+DIR_INT_MAP = {Direction.up: 0, Direction.right: 1,
+               Direction.down: 2, Direction.left: 3}
+
+INT_DIR_MAP = {DIR_INT_MAP[k]: k for k in DIR_INT_MAP}
+
+DIR_CHAR_MAP = {Direction.up: 'u', Direction.left: 'l',
+                Direction.down: 'd', Direction.right: 'r'}
+
+CHAR_DIR_MAP = {DIR_CHAR_MAP[k]: k for k in DIR_CHAR_MAP}
 
 
-def turn(start: int, turn_dir: int) -> int:
+def turn(start: Direction, turn_dir: Direction) -> Direction:
     """Turns given direction in given direction"""
-    assert turn_dir in range(5)
-    assert start in range(5)
 
-    return (start + turn_dir) % 4
+    start_int = DIR_INT_MAP[start]
+    turn_dir_int = DIR_INT_MAP[turn_dir]
 
-def get_turn_diff(start: int, end: int) -> int:
+    return INT_DIR_MAP[(start_int + turn_dir_int) % 4]
+
+
+def get_turn_diff(start: Direction, end: Direction) -> Direction:
     """Returns the direction that is needed to turn from start to end"""
-    assert start in range(5)
-    assert end in range(5)
 
-    return (end - start) % 4
+    start_int = DIR_INT_MAP[start]
+    end_int = DIR_INT_MAP[end]
+
+    return INT_DIR_MAP[(end_int - start_int) % 4]
 
 
-def str_to_dir_list(inp: str)-> List[int]:
+def str_to_dir_list(inp: str)-> List[Direction]:
     """Return list with directions as given in input"""
-    char_dir_map = {'r': 1, 'l': 3}
-    return [char_dir_map[x] for x in inp.lower()]
+    return [CHAR_DIR_MAP[x] for x in inp.lower()]

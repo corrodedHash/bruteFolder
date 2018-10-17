@@ -7,9 +7,9 @@ from .chain import Chain
 
 def spiral_number_map(index: int, start: int, end: int) -> int:
     """Translates a number in a range to a range sorted
-spiral from the middle, ending on the largest element
-[0, 4] -> 2, 1, 3, 0, 4
-[0, 3] -> 1, 2, 0, 3"""
+        spiral from the middle, ending on the largest element
+        [0, 4] -> 2, 1, 3, 0, 4
+        [0, 3] -> 1, 2, 0, 3"""
 
     assert index >= start
     assert index <= end

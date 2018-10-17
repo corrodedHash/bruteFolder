@@ -1,14 +1,14 @@
 """Contains Chain class"""
 
 from typing import List, Tuple
-from .direction import turn, get_turn_diff
+from .direction import turn, get_turn_diff, Direction
 
 
 class Chain:
     """List of directions, folding of this directions"""
 
-    def __init__(self, turn_chain: List[int]) ->None:
-        self.whole_chain = [0]
+    def __init__(self, turn_chain: List[Direction]) ->None:
+        self.whole_chain = [Direction.up]
         for direction in turn_chain:
             self.whole_chain.append(turn(self.whole_chain[-1], direction))
 
@@ -18,7 +18,7 @@ class Chain:
         self.chain_end = len(self.whole_chain)
 
     @property
-    def chain(self) -> List[int]:
+    def chain(self) -> List[Direction]:
         """Returns chain"""
         return self.whole_chain[self.chain_start: self.chain_end]
 
@@ -28,14 +28,14 @@ class Chain:
         assert index >= 0
 
         turn_dir = get_turn_diff(self.chain[index], self.chain[index + 1])
-        assert turn_dir in (1, 3)
+        assert turn_dir in (Direction.left, Direction.right)
 
         first_part = self.chain[:index + 1][::-1]
         last_part = self.chain[index + 1:]
         parts = zip(first_part, last_part)
 
-        def match(x: int, y: int) -> bool:
-            return get_turn_diff(x, turn(y, turn_dir)) == 2
+        def match(x: Direction, y: Direction) -> bool:
+            return get_turn_diff(x, turn(y, turn_dir)) == Direction.down
         return all(match(before, after) for before, after in parts)
 
     def fold(self, index: int) -> None:
