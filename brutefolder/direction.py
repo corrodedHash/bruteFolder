@@ -2,8 +2,13 @@
 from typing import List
 import enum
 
+
 @enum.unique
 class Direction(enum.Enum):
+    """
+    Enum for 2D direction
+    """
+
     up = 1
     right = 2
     down = 3
@@ -14,6 +19,7 @@ class Direction(enum.Enum):
 
     def __repr__(self) -> str:
         return self.name
+
 
 DIR_INT_MAP = {Direction.up: 0, Direction.right: 1,
                Direction.down: 2, Direction.left: 3}

@@ -1,6 +1,6 @@
 """Main script of project"""
 import copy
-from multiprocessing import Queue, Pool, Manager
+from multiprocessing import Pool
 
 from typing import List
 
@@ -9,33 +9,37 @@ from . import direction
 from . import chain
 
 
-def pool_executor(index, chain):
-    best_chain_len = len(chain) + 1
-    best_fold = []
-    for fold in folding.get_folds(chain, [index]):
+def pool_executor(index: int, search_chain: chain.Chain) -> List[int]:
+    """
+    Executor of parallel brute forcing
+    """
+    best_chain_len = len(search_chain) + 1
+    best_fold: List[int] = []
+    for fold in folding.get_folds(search_chain, [index]):
         if len(fold) <= best_chain_len:
             best_chain_len = len(fold)
             best_fold = copy.deepcopy(fold)
 
-    return best_fold 
+    return best_fold
 
-def pool_main(search_chain) -> None:
-    """Main function"""
+
+def pool_main(search_chain: chain.Chain) -> None:
+    """Parallel main function"""
     print("Input chain: {0}".format(search_chain.chain))
     indices = range(len(search_chain) - 1)
     chains = [search_chain] * (len(search_chain) - 1)
     params = zip(indices, chains)
 
     with Pool(processes=3) as pool:
-        results = pool.starmap(pool_executor, params)
+        pool_results = pool.starmap(pool_executor, params)
 
-    results = (x for x in results if x)
+    results = (x for x in pool_results if x)
 
-    result = min(results, key=lambda x: len(x))
+    result = min(results, key=len)
     print("Best result: {0}".format(result))
 
 
-def single_main(search_chain) -> None:
+def single_main(search_chain: chain.Chain) -> None:
     """Main function"""
     best_fold: List[int] = []
     best_fold_count = 0
@@ -61,8 +65,15 @@ def single_main(search_chain) -> None:
     print("One of those is: {0}".format(best_fold))
 
 
-if __name__ == "__main__":
-    search_chain = chain.Chain(direction.str_to_dir_list("LRRLLLRRLRRRLLR"))
+def main() -> None:
+    """
+    Main function
+    """
+    search_chain = chain.Chain(direction.str_to_dir_list("RRRLLRLLLRR"))
     #search_chain = chain.Chain(direction.str_to_dir_list("RLLLRRLRRRLL"))
     #pool_main(search_chain)
     single_main(search_chain)
+
+
+if __name__ == "__main__":
+    main()
